@@ -3,13 +3,11 @@
 (function() {
 
     
-    let ink, story_cont, story, clicks, runthroughs, is_running
+    let ink, storyCont, story, clicks, runthroughs, isRunning
 
-    let output_box, log_content, collected_content, go_button, show_signat
+    let outputBox, logContent, collectedContent, goButton, showSignat
 
-    let org_data
-
-//    let loaded_story_content
+    let orgData
 
     let interval = 0
 
@@ -25,7 +23,7 @@
 
     function placeFileContent(file) {
         readFileContent(file).then(content => {
-            loaded_story_done(content)
+            loadedStoryDone(content)
         }).catch(error => console.log(error))
     }
 
@@ -38,7 +36,7 @@
         })
     }
 
-    function loaded_story_done(content) {
+    function loadedStoryDone(content) {
         //if (!content.startsWith('var storyContent')) {
         //    console.log("WARNING: This does not seem to be a story.js file.")
         //}
@@ -53,95 +51,94 @@
             alert("This does not seem to be a valid story.js file.")
             return
         }
-        load_story(obj)
-        start_testing()
-        go_button.style.opacity = 1
-        go_button.innerHTML = "Stop Test"
-        go_button.onclick = stop_testing
+        loadStory(obj)
+        startTesting()
+        goButton.style.opacity = 1
+        goButton.innerHTML = "Stop Test"
+        goButton.onclick = stopTesting
     }
 
     function start() {     
         document.getElementById('input-file')
             .addEventListener('change', getFile)
-        log_content = ""
-        output_box = document.getElementById("output")
-        go_button = document.getElementById("go_button")
-        load_inkjs(inkjs)
+        logContent = ""
+        outputBox = document.getElementById("output")
+        goButton = document.getElementById("go_button")
+        loadInkjs(inkjs)
     }
 
-
-    function start_testing(data = false) {
+    function startTesting(data = false) {
         if (data && !data.split) {
             data = false
         }
-        is_running = true
+        isRunning = true
         if (!ink) {
             alert (`inkjs was not loaded`)
             return false
         }
-        if (!story_cont) {
+        if (!storyCont) {
             alert (`You need to load a story.js file first.`)
             return false
         }
         runthroughs = 0
-        story = new inkjs.Story(story_cont)
+        story = new inkjs.Story(storyCont)
         story.onError = (msg, type) => {
-            log_error(msg, type)
-            stop_testing()
+            logError(msg, type)
+            stopTesting()
         }
         if (data) {
             data = data.split("/")
         }
-        do_step(true, data)
+        doStep(true, data)
         return true
     }
     
-    function log_error(type, msg) {
-        output_box.innerHTML = ""
-        output_box.innerHTML += `<p class="error">${type}: ${msg}</p>`
-        console.log(collected_content)
-        output_box.innerHTML += `<p>(Currently there are ${story.currentChoices.length} choices for
+    function logError(type, msg) {
+        outputBox.innerHTML = ""
+        outputBox.innerHTML += `<p class="error">${type}: ${msg}</p>`
+        console.log(collectedContent)
+        outputBox.innerHTML += `<p>(Currently there are ${story.currentChoices.length} choices for
             the player to choose from.)</p>`
         
         let signature = ""
-        for (let item of collected_content) {
+        for (let item of collectedContent) {
             if (item.type === "choice") {
                 signature += (item.content.index + 1) + "/"
             }
         }
-        output_box.innerHTML += "Signature: <textarea>" + signature+"</textarea>"
+        outputBox.innerHTML += "Signature: <textarea>" + signature+"</textarea>"
     
-        render_history(collected_content)
-        output_box.innerHTML += `<p class="error">${type}: ${msg}</p>`
-        go_button.innerHTML = "Start Random Test"
-        go_button.onclick = go_test
+        renderHistory(collectedContent)
+        outputBox.innerHTML += `<p class="error">${type}: ${msg}</p>`
+        goButton.innerHTML = "Start Random Test"
+        goButton.onclick = goTest
     }
 
     window.replay = () => {
-        stop_testing()
+        stopTesting()
         setTimeout( () => {
             let data = prompt("Paste a valid signature:")
             if (!data) return
-            go_test(data)
+            goTest(data)
         }, 500)
     }
 
-    window.go_test = (data = false) => {
-        output_box.innerHTML = ""
-        org_data = false
-        let result = start_testing(data)
+    window.goTest = (data = false) => {
+        outputBox.innerHTML = ""
+        orgData = false
+        let result = startTesting(data)
         if (!result) return
-        go_button.innerHTML = "Stop Test"
-        go_button.onclick = stop_testing
+        goButton.innerHTML = "Stop Test"
+        goButton.onclick = stopTesting
     }
 
-    window.stop_testing = () => {
-        is_running = false
-        go_button.innerHTML = "Start Random Test"
-        go_button.onclick = go_test
+    window.stopTesting = () => {
+        isRunning = false
+        goButton.innerHTML = "Start Random Test"
+        goButton.onclick = goTest
     }
 
-    function render_history(collected) {
+    function renderHistory(collected) {
         let out = ""
         for (let item of collected) {
             if (item.type === "text") {
@@ -153,54 +150,52 @@
             }
             
         }
-        output_box.innerHTML += out
+        outputBox.innerHTML += out
     }
 
     function log(txt) {
-        if (!is_running) return
-        log_content += txt + "<br>"
-        output_box.innerHTML = log_content
+        if (!isRunning) return
+        logContent += txt + "<br>"
+        outputBox.innerHTML = logContent
     }
 
     function cls() {
-        if (!is_running) return
-        log_content = ""
-        output_box.innerHTML = log_content
+        if (!isRunning) return
+        logContent = ""
+        outputBox.innerHTML = logContent
     }
 
-    function do_step(restart, data) {
-        if (!is_running) return
+    function doStep(restart, data) {
+        if (!isRunning) return
         if (restart) {
             if (data) {
-                org_data = [...data]
-                show_signat = data.join("/")
+                orgData = [...data]
+                showSignat = data.join("/")
             } else {
-                show_signat = "random"
+                showSignat = "random"
             }
-            collected_content = []
+            collectedContent = []
             clicks = 0
             //console.log("RESTARTING STORY")
             story.ResetState()
         }
-        let last_p
+        let lastP
         while(story.canContinue) {
-            let paragraph_text = story.Continue()
-            collected_content.push({
+            let paragraphText = story.Continue()
+            collectedContent.push({
                 type: "text",
-                content: paragraph_text,
+                content: paragraphText,
             })
-            //console.log(paragraph_text)
-            last_p = paragraph_text
+            lastP = paragraphText
         }
         let choices = story.currentChoices
         //console.log(choices)
         if (choices.length === 0) {
-            //console.log("REACHED END:", last_p)
             runthroughs++
             cls()
             log("*** I played through the story " + runthroughs + " times. ***")
-            log("(Using signature: "+show_signat+")")
-            log("reached end: " + last_p)
+            log("(Using signature: "+showSignat+")")
+            log("reached end: " + lastP)
             log("It took me " + clicks + " clicks to reach an ending.")
             let msg = "No errors found."
             let r = runthroughs
@@ -211,7 +206,7 @@
             }
             log("<span class='no-errors'>"+msg+"</span>")
 
-            do_step(true, org_data)
+            doStep(true, orgData)
             return
         }
         
@@ -219,15 +214,15 @@
         if (data) {
             index = data.shift()
             if (!index) {
-                index = get_rnd_int(0, choices.length - 1)
+                index = getRndInt(0, choices.length - 1)
             } else {
                 index = Number(index) - 1
             }
         } else {
-            index = get_rnd_int(0, choices.length - 1)
+            index = getRndInt(0, choices.length - 1)
         }
         
-        collected_content.push({
+        collectedContent.push({
             type: "choice",
             content: choices[index],
         })
@@ -235,25 +230,25 @@
             story.ChooseChoiceIndex(index)
         } catch(e) {
             console.log(e)
-            stop_testing()
-            output_box.innerHTML = `${e} - You probably specified an invalid choice number inside the signature string.`
+            stopTesting()
+            outputBox.innerHTML = `${e} - You probably specified an invalid choice number inside the signature string.`
             return
         }
         setTimeout( () => {
             clicks++
-            do_step(false, data)
+            doStep(false, data)
         }, interval)
     }
 
-    function get_rnd_int(min, max) {
+    function getRndInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min
     }
 
-    function load_story(tcontent) {
-        story_cont = tcontent
+    function loadStory(tcontent) {
+        storyCont = tcontent
     }
     
-    function load_inkjs(tinkjs) {
+    function loadInkjs(tinkjs) {
         ink = tinkjs
     }
       
