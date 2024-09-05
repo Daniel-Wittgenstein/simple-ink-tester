@@ -1,0 +1,58 @@
+
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>INK TESTER</title>
+
+    <style>
+        body {
+            background: #222;
+            color: #FFF;
+        }
+
+        .choice {
+            color: green;
+        }
+
+        .no-errors {
+            color: green;
+        }
+
+        .number {
+            color: #888;
+        }
+
+        .error {
+            color: #D00;
+        }
+
+        #go_button {
+            opacity: 0;
+        }
+
+        #output {
+            margin-top: 32px;
+        }
+        
+    </style>
+
+</head>
+
+<body>
+    <div id="menu">
+        <p>INK-TESTER</p>
+        <p>Select the story.js file you want to test:</p>
+        <p>(This is the file named "yourstorytitle.js" that is exported when you choose EXPORT in Inky. It's NOT named "ink.js" or "main.js"!)</p>
+        <input type="file" id="input-file">
+
+        <button id="go_button" onclick="go_test(false)">Start Random Test</button>
+        <button id="replay_button" onclick="replay()">Start Replay Test</button>
+
+    </div>
+    <div id="output"></div>
+    <script src="ink.js"></script>
+    <script src="run.js"></script>
+</body>
+
+</html>
