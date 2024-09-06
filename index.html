@@ -66,10 +66,20 @@
         }
 
         button:hover {
-            background: #fff;
-            color:#0062b3;       
+            background: #014883;
+            color:#fff;       
         }
         
+        .stop-button {
+            background: rgb(170, 1, 1);
+            color: white;
+        }        
+        
+        .stop-button:hover {
+            background: rgb(122, 0, 0);
+            color: white;
+        }
+
     </style>
 
 </head>
@@ -92,8 +102,8 @@
         </div>
 
         <button id="go_button" onclick="goTest(false)">Start Random Test</button>
-        <button id="replay_button" onclick="replay()">Start Replay Test</button>
-        <button id="other_story_button" onclick="window.location.reload()">Select another Story</button>
+        <button id="replay_button" onclick="replay()">Start a Replay Test ▶️</button>
+        <button id="other_story_button" onclick="window.location.reload()">Select another Story 🔃</button>
 
     </div>
 

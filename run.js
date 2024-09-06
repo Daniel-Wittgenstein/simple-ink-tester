@@ -2,6 +2,12 @@
 
 (function() {
 
+    const TEXTS = {
+        startRandomFirst: `START A NEW RANDOM CLICK TEST NOW! 🎲`,
+        startRandom: `Start a new Random Click Test 🎲`,
+        stopTest: "Stop Test",
+    }
+
     console.warn = (warning) => {
         log(warning, {isWarning: true, perma: true})
     }
@@ -81,7 +87,7 @@
         show(replayButton)
         show(otherStoryButton)
         goButton.style.opacity = 1
-        goButton.innerHTML = "START A NEW RANDOM CLICK TEST NOW!"
+        goButton.innerHTML = TEXTS.startRandomFirst
         goButton.onclick = goTest
     }
 
@@ -178,7 +184,7 @@
     
         renderHistory(collectedContent)
         outputBox.innerHTML += `<p class="error">${type}: ${msg}</p>`
-        goButton.innerHTML = "Start a New Random Click Test"
+        goButton.innerHTML = TEXTS.startRandom
         goButton.onclick = goTest
     }
 
@@ -196,13 +202,15 @@
         orgData = false
         let result = startTesting(data)
         if (!result) return
-        goButton.innerHTML = "Stop Test"
+        goButton.innerHTML = TEXTS.stopTest
+        goButton.classList.add('stop-button')
         goButton.onclick = stopTesting
     }
 
     window.stopTesting = () => {
         isRunning = false
-        goButton.innerHTML = "Start a New Random Click Test"
+        goButton.innerHTML = TEXTS.startRandom
+        goButton.classList.remove('stop-button')
         goButton.onclick = goTest
     }
 
