@@ -13,11 +13,12 @@
     const MAX_RUNTHROUGHS = 1000 //otherwise we end with
         //"too much recursion error" sooner or later
 
-    const inkLibNames = ["inkjs2.1.0", "inkjs2.2.2", "inkjs2.3.0"]
+    const inkLibNames = ["ink-legacy-old", "inkjs2.1.0", "inkjs2.2.2", "inkjs2.3.0"]
 
     let ink, storyCont, story, clicks, runthroughs, isRunning
 
-    let outputBox, outputBoxPerma, logContent, collectedContent, goButton, showSignat
+    let outputBox, outputBoxPerma, logContent, collectedContent, goButton,
+        showSignat, inkJsSelector, fileSelector, otherStoryButton
 
     let orgData
 
@@ -76,19 +77,44 @@
             return
         }
         loadStory(obj)
-        startTesting()
+        hide(fileSelector)        
+        show(replayButton)
+        show(otherStoryButton)
         goButton.style.opacity = 1
-        goButton.innerHTML = "Stop Test"
-        goButton.onclick = stopTesting
+        goButton.innerHTML = "START A NEW RANDOM CLICK TEST NOW!"
+        goButton.onclick = goTest
     }
 
-    function start() {     
+    function populateInkJsSelector() {
+        for (const inkLibName of inkLibNames.reverse()) {
+            inkJsSelector.innerHTML += `
+                <option value="${inkLibName}">${inkLibName}</option>
+            `
+        }
+    }
+
+    function show(el) {
+        el.style.display = "block"
+    }
+
+    function hide(el) {
+        el.style.display = "none"
+    }
+
+    function start() {
         document.getElementById('input-file')
             .addEventListener('change', getFile)
         logContent = ""
         outputBox = document.getElementById("output")
         outputBoxPerma = document.getElementById("output-perma")
         goButton = document.getElementById("go_button")
+        replayButton = document.getElementById("replay_button")
+        hide(replayButton)
+        inkJsSelector = document.getElementById("inkjs-selector")
+        fileSelector = document.getElementById("file-selector")
+        otherStoryButton = document.getElementById("other_story_button")
+        hide(otherStoryButton)
+        populateInkJsSelector()
         loadInkjs()
     }
 
@@ -98,6 +124,8 @@
     }
 
     function startTesting(data = false) {
+        hide(fileSelector)
+        hide(inkJsSelector)
         isRunning = true
         clearOutputBoxPerma()
         currentStory.title = document.getElementById("input-file").value
@@ -150,7 +178,7 @@
     
         renderHistory(collectedContent)
         outputBox.innerHTML += `<p class="error">${type}: ${msg}</p>`
-        goButton.innerHTML = "Start Random Test"
+        goButton.innerHTML = "Start a New Random Click Test"
         goButton.onclick = goTest
     }
 
@@ -174,7 +202,7 @@
 
     window.stopTesting = () => {
         isRunning = false
-        goButton.innerHTML = "Start Random Test"
+        goButton.innerHTML = "Start a New Random Click Test"
         goButton.onclick = goTest
     }
 

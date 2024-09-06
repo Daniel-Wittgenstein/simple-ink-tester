@@ -8,6 +8,7 @@
         body {
             background: #222;
             color: #FFF;
+            font-family: sans-serif;
         }
 
         .choice {
@@ -33,6 +34,41 @@
         #output {
             margin-top: 32px;
         }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload {
+            background: #0062b3;
+            color: #fff;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: sans-serif;
+        }
+
+        .custom-file-upload:hover {
+            background: #fff;
+            color:#0062b3;
+        }
+
+        button {
+            background: #0062b3;
+            color: #fff;
+            margin: 12px;
+            border: none;
+            cursor: pointer;
+            font-family: sans-serif;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #fff;
+            color:#0062b3;       
+        }
         
     </style>
 
@@ -41,18 +77,29 @@
 <body>
     <div id="menu">
         <p>INK-TESTER</p>
-        <p>Select the story.js file you want to test:</p>
-        <p>(This is the file named "yourstorytitle.js" that is exported when you choose EXPORT in Inky. It's NOT named "ink.js" or "main.js"!)</p>
-        <input type="file" id="input-file">
+        <div id="file-selector">
+            <p>First select the story.js file you want to test by clicking here:</p>
 
-        <button id="go_button" onclick="go_test(false)">Start Random Test</button>
+            <label for="input-file" class="custom-file-upload">
+                Choose your story.js file
+            </label>
+            <input id="input-file" type="file" />
+            
+            <p>This is the file named "yourstorytitle.js" that is exported when you choose EXPORT in Inky. It's NOT named "ink.js" or "main.js"! Also remember to export as JS, not as JSON!</p>
+            <select id="inkjs-selector" style="display: none">
+            </select>
+            <p>running on inkjs 2.3.0</p>
+        </div>
+
+        <button id="go_button" onclick="goTest(false)">Start Random Test</button>
         <button id="replay_button" onclick="replay()">Start Replay Test</button>
-
-
+        <button id="other_story_button" onclick="window.location.reload()">Select another Story</button>
 
     </div>
+
     <div style="margin-top: 12px" id="output-perma"></div>
     <div id="output"></div>
+    <script src="inkjs/ink-legacy-old.js"></script>
     <script src="inkjs/inkjs2.1.0.js"></script>
     <script src="inkjs/inkjs2.2.2.js"></script>
     <script src="inkjs/inkjs2.3.0.js"></script>
