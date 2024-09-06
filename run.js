@@ -2,6 +2,90 @@
 
 (function() {
 
+    const guideHtml = `
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>GUIDE - SIMPLE INK TESTER</title>
+            <style>
+                body {
+                    margin: 14px;
+                    font-size: 14px;
+                    background-color: #222;
+                    color: white;
+                    font-family: sans-serif;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>SIMPLE INK TESTER - GUIDE</h1>
+            <p>1. Export your Ink story as ".js" file, then import it into Simple Ink Tester
+            by clicking the button on the start screen.<br>
+            This is the file named "yourstorytitle.js" that is exported when you
+            choose EXPORT in Inky. It's usually NOT named "ink.js" or "main.js" (unless that's your story name)! Also remember to export as JS, not as JSON!
+            </p>
+
+            <p>2. Click on "START A NEW RANDOM CLICK TEST NOW!"</p>
+
+            <p>3. Simple Ink Tester will randomly pick choices and check if your story has errors.
+            It catches errors like the flow running out or the user reaching a point where there are no choices anymore
+            but the story has not ended.
+            After each playthrough, Simple Ink Tester automatically starts a new playthrough.
+            You will see a message like this: <i>I played through the story 17 times.</i>
+            Obviously, this shows you how many times Simple Ink Tester has reached the/an end of the story.
+            The longer you let it test, the more likely it is to find an error.</p>
+
+            <p>4. If no errors occur, that's a good sign!</p>
+
+            <p>5. If an error occurs, you will see a playthrough that shows you what choices were (randomly) picked
+            to reach that error. You will also see a so-called <i>signature</i>. This is a string
+            that looks somehow like this: "1/2/1/3/1". Make sure to copy that signature and save it to a file
+            so you don't lose it. Now you can go and fix your error. Once you are confident that
+            the error is fixed, export your updated story to a ".js" file and load it into Simple Ink Tester.
+            But this time, click on the button "Start a Replay Test". This will open a window, where you should
+            paste your signature. Simple Ink Tester will replay the exact same choices
+            that led to the previous error. If the error is truly fixed, it should
+            not appear again.</p>
+
+            <p>6. Randomness caveat: in stories with randomness
+            the same <i>signature</i> can lead to vastly different
+            results. If you are testing stories with randomness, consider using
+            Ink's SEED_RANDOM() function to make the random number generator
+            predictable. Once you are done testing, you can remove
+            the call to SEED_RANDOM().
+            </p>
+
+            <p>7. How signatures work: signatures are simply a list of
+            numbers separated by a slash character. "1/2/1" means:
+            choose the first choice, then choose the second choice,
+            then choose the first choice, after that
+            if the story is not over, start choosing
+            at random. (Signatures start counting
+            at 1 not at 0.)</p>
+
+            <p>8. Testing big / complex stories:
+            Simple Ink Tester picks choices entirely at random.
+            If your game is structured in a certain way where
+            the story mostly moves forward, this is usually fine.
+            But if your story is full of dead-ends that end the game
+            or loops that are hard to beat, Simple Ink Tester
+            may keep choosing the same paths over and over again
+            and never test other parts of your story.
+            In this case, you can also use signatures
+            to improve testing.<br><br>
+            Let's assume that the first three choices in your game
+            affect how the rest of the story plays out.
+            You could run a replay test and enter the signature:
+            "1/2/1". Now Simple Ink Tester will always choose
+            the first choice, followed by the second choice,
+            followed by the first choice. After that it will
+            keep picking choices randomly. This allows
+            you to test some paths more thoroughly.
+            </p>
+
+        </body>
+    `
+
     const TEXTS = {
         startRandomFirst: `START A NEW RANDOM CLICK TEST NOW! 🎲`,
         startRandom: `Start a new Random Click Test 🎲`,
@@ -216,6 +300,11 @@
         goButton.innerHTML = TEXTS.startRandom
         goButton.classList.remove('stop-button')
         goButton.onclick = goTest
+    }
+
+    window.openGuide = () => {
+        const win = window.open("", "Title", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=400,top=100,left=100")
+        win.document.body.innerHTML = guideHtml
     }
 
     function renderHistory(collected) {
