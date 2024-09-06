@@ -256,7 +256,7 @@
             }
             log("<span class='no-errors'>"+msg+"</span>")
             if (runthroughs >= MAX_RUNTHROUGHS) {
-                log("Ran through story ${MAX_RUNTHROUGHS}. Test completed.")
+                log(`Ran through story ${MAX_RUNTHROUGHS} times. Test completed.`)
                 return
             }
             doStep(true, orgData)
