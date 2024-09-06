@@ -2,10 +2,18 @@
 
 (function() {
 
-    
+    console.warn = (warning) => {
+        log(warning, {isWarning: true, perma: true})
+    }
+
+    const MAX_RUNTHROUGHS = 1000 //otherwise we end with
+        //"too much recursion error" sooner or later
+
+    const inkLibNames = ["inkjs2.1.0", "inkjs2.2.2", "inkjs2.3.0"]
+
     let ink, storyCont, story, clicks, runthroughs, isRunning
 
-    let outputBox, logContent, collectedContent, goButton, showSignat
+    let outputBox, outputBoxPerma, logContent, collectedContent, goButton, showSignat
 
     let orgData
 
@@ -13,6 +21,18 @@
 
     window.onload = start
 
+    const inkLibs = {}
+
+    function loadInkjs() {
+        for (const key of inkLibNames) {
+            inkLibs[key.replace("inkjs", "")] = window[key]
+        }
+        useInkLibVersion("2.3.0")
+    }
+
+    function useInkLibVersion(version) {
+        ink = inkLibs[version]
+    }
 
     function getFile(event) {
         const input = event.target
@@ -63,11 +83,17 @@
             .addEventListener('change', getFile)
         logContent = ""
         outputBox = document.getElementById("output")
+        outputBoxPerma = document.getElementById("output-perma")
         goButton = document.getElementById("go_button")
-        loadInkjs(inkjs)
+        loadInkjs()
+    }
+
+    function clearOutputBoxPerma() {
+        outputBoxPerma.innerHTML = ""
     }
 
     function startTesting(data = false) {
+        clearOutputBoxPerma()
         if (data && !data.split) {
             data = false
         }
@@ -81,15 +107,20 @@
             return false
         }
         runthroughs = 0
-        story = new inkjs.Story(storyCont)
+        story = new ink.Story(storyCont)
         story.onError = (msg, type) => {
-            logError(msg, type)
+            logError(type, msg)
             stopTesting()
         }
         if (data) {
             data = data.split("/")
         }
-        doStep(true, data)
+        try {
+            doStep(true, data)
+        } catch(err) {
+            //js error (for example: too much recursion):
+            outputBox.innerHTML += `<p class="error">${err}</p>`
+        }
         return true
     }
     
@@ -153,10 +184,20 @@
         outputBox.innerHTML += out
     }
 
-    function log(txt) {
+    function log(txt, options = {isWarning: false, perma: false}) {
         if (!isRunning) return
-        logContent += txt + "<br>"
-        outputBox.innerHTML = logContent
+        let content = ""
+        if (options.isWarning) {
+            content = `<span style="background: #aa0; color: #000;">
+                ${txt}</span>` + "<br>"
+        } else {
+            content = txt + "<br>"
+        }
+        if (options.perma) {
+            outputBoxPerma.innerHTML += content    
+        } else {
+            outputBox.innerHTML += content
+        }
     }
 
     function cls() {
@@ -205,7 +246,10 @@
                 msg = "Still no errors."
             }
             log("<span class='no-errors'>"+msg+"</span>")
-
+            if (runthroughs >= MAX_RUNTHROUGHS) {
+                log("Ran through story ${MAX_RUNTHROUGHS}. Test completed.")
+                return
+            }
             doStep(true, orgData)
             return
         }
@@ -246,10 +290,6 @@
 
     function loadStory(tcontent) {
         storyCont = tcontent
-    }
-    
-    function loadInkjs(tinkjs) {
-        ink = tinkjs
     }
       
 
