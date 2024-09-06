@@ -6,6 +6,10 @@
         log(warning, {isWarning: true, perma: true})
     }
 
+    const currentStory = {
+        title: "",
+    }
+
     const MAX_RUNTHROUGHS = 1000 //otherwise we end with
         //"too much recursion error" sooner or later
 
@@ -89,15 +93,20 @@
     }
 
     function clearOutputBoxPerma() {
+        console.log("clear shit")
         outputBoxPerma.innerHTML = ""
     }
 
     function startTesting(data = false) {
+        isRunning = true
         clearOutputBoxPerma()
+        currentStory.title = document.getElementById("input-file").value
+            .replace("C:\\fakepath\\", "")
+        log("STORY: " + currentStory.title, {perma: true, isWarning: false})
+        document.getElementById("input-file").value = ""
         if (data && !data.split) {
             data = false
         }
-        isRunning = true
         if (!ink) {
             alert (`inkjs was not loaded`)
             return false
@@ -189,12 +198,12 @@
         let content = ""
         if (options.isWarning) {
             content = `<span style="background: #aa0; color: #000;">
-                ${txt}</span>` + "<br>"
+               ${txt}</span>` + "<br>"
         } else {
             content = txt + "<br>"
         }
         if (options.perma) {
-            outputBoxPerma.innerHTML += content    
+            outputBoxPerma.innerHTML += content
         } else {
             outputBox.innerHTML += content
         }
