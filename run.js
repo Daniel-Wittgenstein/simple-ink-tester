@@ -132,6 +132,8 @@
     function startTesting(data = false) {
         hide(fileSelector)
         hide(inkJsSelector)
+        hide(replayButton)
+        hide(otherStoryButton)
         isRunning = true
         clearOutputBoxPerma()
         currentStory.title = document.getElementById("input-file").value
@@ -209,6 +211,8 @@
 
     window.stopTesting = () => {
         isRunning = false
+        show(replayButton)
+        show(otherStoryButton)
         goButton.innerHTML = TEXTS.startRandom
         goButton.classList.remove('stop-button')
         goButton.onclick = goTest
