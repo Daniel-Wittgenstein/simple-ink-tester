@@ -85,6 +85,35 @@
             justify-content: flex-end;
         }
 
+        .wrapper {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .main {
+            width: 50%;
+        }
+
+        .stats {
+            width: 50%;
+            background: #272727;
+            padding: 8px;
+        }
+
+        a {
+            color: white;
+        }
+
+        .disabled-snip-link {
+            text-decoration: none !important;
+            color: #ccc!important;
+        }
+
+        .snip-link {
+            text-decoration: underline;
+            color: white;
+        }
+
     </style>
 
 </head>
@@ -93,30 +122,38 @@
     <div class="top-bar">
         <button onclick="openGuide()">OPEN GUIDE</button>
     </div>
-    <div id="menu">
-        <p>😄 😄 😄 SIMPLE INK TESTER 😄 😄 😄</p>
-        <div id="file-selector">
-            <p>First select the story.js file you want to test by clicking here:</p>
+    <div class="wrapper">
+        <div class="main">
+            <div id="menu">
+                <p>😄 😄 😄 SIMPLE INK TESTER 😄 😄 😄</p>
+                <div id="file-selector">
+                    <p>First select the story.js file you want to test by clicking here:</p>
 
-            <label for="input-file" class="custom-file-upload">
-                Choose your story.js file
-            </label>
-            <input id="input-file" type="file" />
-            
-            <p>This is the file named "yourstorytitle.js" that is exported when you choose EXPORT in Inky. It's NOT named "ink.js" or "main.js"! Also remember to export as JS, not as JSON!</p>
-            <select id="inkjs-selector" style="display: none">
-            </select>
-            <p>running on inkjs 2.3.0</p>
+                    <label for="input-file" class="custom-file-upload">
+                        Choose your story.js file
+                    </label>
+                    <input id="input-file" type="file" />
+                    
+                    <p>This is the file named "yourstorytitle.js" that is exported when you choose EXPORT in Inky. It's NOT named "ink.js" or "main.js"! Also remember to export as JS, not as JSON!</p>
+                    <select id="inkjs-selector" style="display: none">
+                    </select>
+                    <p>running on inkjs 2.3.0</p>
+                </div>
+
+                <button id="go_button" onclick="goTest(false)">Start Random Test</button>
+                <button id="replay_button" onclick="replay()">Start a Replay Test ▶️</button>
+                <button id="other_story_button" onclick="window.location.reload()">Select another Story 🔃</button>
+
+            </div>
+
+            <div style="margin-top: 12px" id="output-perma"></div>
+            <div id="output"></div>
         </div>
-
-        <button id="go_button" onclick="goTest(false)">Start Random Test</button>
-        <button id="replay_button" onclick="replay()">Start a Replay Test ▶️</button>
-        <button id="other_story_button" onclick="window.location.reload()">Select another Story 🔃</button>
-
+        
+        <div class="stats">
+            <div id="endings"></div>
+        </div>
     </div>
-
-    <div style="margin-top: 12px" id="output-perma"></div>
-    <div id="output"></div>
     <script src="inkjs/ink-legacy-old.js"></script>
     <script src="inkjs/inkjs2.1.0.js"></script>
     <script src="inkjs/inkjs2.2.2.js"></script>

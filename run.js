@@ -2,22 +2,9 @@
 
 (function() {
 
+    const ENDING_MAX_SNIPPET_LENGTH = 20
+
     const guideHtml = `
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>GUIDE - SIMPLE INK TESTER</title>
-            <style>
-                body {
-                    margin: 14px;
-                    font-size: 14px;
-                    background-color: #222;
-                    color: white;
-                    font-family: sans-serif;
-                }
-            </style>
-        </head>
-        <body>
             <h1>SIMPLE INK TESTER - GUIDE</h1>
             <p>1. Export your Ink story as ".js" file, then import it into Simple Ink Tester
             by clicking the button on the start screen.<br>
@@ -82,9 +69,10 @@
             keep picking choices randomly. This allows
             you to test some paths more thoroughly.
             </p>
-
-        </body>
     `
+
+    let stats
+    resetStats()
 
     const TEXTS = {
         startRandomFirst: `START A NEW RANDOM CLICK TEST NOW! 🎲`,
@@ -123,6 +111,30 @@
             inkLibs[key.replace("inkjs", "")] = window[key]
         }
         useInkLibVersion("2.3.0")
+    }
+
+    function openWindow(title, html) {
+        const targetHtml = `
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${html}</title>
+                    <style>
+                        body {
+                            margin: 14px;
+                            font-size: 14px;
+                            background-color: #222;
+                            color: white;
+                            font-family: sans-serif;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${html}
+                </body>
+            </html>` 
+        const win = window.open("", title, "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=400,top=100,left=100")
+        win.document.body.innerHTML = targetHtml
     }
 
     function useInkLibVersion(version) {
@@ -192,6 +204,29 @@
     }
 
     function start() {
+        document.addEventListener("click", listener)
+
+        function listener(event) {
+            var element = event.target
+            if (element.tagName == 'A' && element.classList.contains("snip-link")) {
+                if (isRunning) {
+                    alert("Stop the test first. Then you can inspect this info.")
+                    return
+                }
+                const targetIndex = Number(element.getAttribute('data-index'))
+                let i = -1
+                for (const key of Object.keys(stats.endings).sort()) {
+                    i++
+                    if (i === targetIndex) {
+                        const text = key
+                        openWindow(`Ending Nr. ${i}`, `This ending occurred ${stats.endings[key]} times:<br><br>` + text)
+                        return
+                    }
+                }
+                alert("Cannot inspect.")
+            }
+        }
+
         document.getElementById('input-file')
             .addEventListener('change', getFile)
         logContent = ""
@@ -214,6 +249,8 @@
     }
 
     function startTesting(data = false) {
+        clearEndingsDisplay()
+        resetStats()
         hide(fileSelector)
         hide(inkJsSelector)
         hide(replayButton)
@@ -300,11 +337,13 @@
         goButton.innerHTML = TEXTS.startRandom
         goButton.classList.remove('stop-button')
         goButton.onclick = goTest
+        for (const el of document.querySelectorAll(".snip-link")) {
+            el.classList.remove("disabled-snip-link")
+        }
     }
 
     window.openGuide = () => {
-        const win = window.open("", "Title", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=400,top=100,left=100")
-        win.document.body.innerHTML = guideHtml
+        openWindow(`GUIDE - SIMPLE INK TESTER`, guideHtml)
     }
 
     function renderHistory(collected) {
@@ -358,14 +397,16 @@
             //console.log("RESTARTING STORY")
             story.ResetState()
         }
-        let lastP
+        let lastPs = ""
+        let veryLastP
         while(story.canContinue) {
             let paragraphText = story.Continue()
             collectedContent.push({
                 type: "text",
                 content: paragraphText,
             })
-            lastP = paragraphText
+            veryLastP = paragraphText + "\n"
+            lastPs += veryLastP
         }
         let choices = story.currentChoices
         //console.log(choices)
@@ -374,7 +415,9 @@
             cls()
             log("*** I played through the story " + runthroughs + " times. ***")
             log("(Using signature: "+showSignat+")")
-            log("reached end: " + lastP)
+            /*const wholeStoryDisplay = collectedContent
+                .map(n => n.content.text ? "choice: " + n.content.text : n.content)
+                .join("<br><br>")*/
             log("It took me " + clicks + " clicks to reach an ending.")
             let msg = "No errors found."
             let r = runthroughs
@@ -388,7 +431,10 @@
                 log(`Ran through story ${MAX_RUNTHROUGHS} times. Test completed.`)
                 return
             }
+            log("reached ending: " + veryLastP)
             doStep(true, orgData)
+            addEnding(lastPs)
+            setEndingsDisplay("Endings reached:<br>" + getEndingsShortDescr())
             return
         }
         
@@ -420,6 +466,42 @@
             clicks++
             doStep(false, data)
         }, interval)
+    }
+
+
+    function clearEndingsDisplay() {
+        document.getElementById("endings").innerHTML = ""
+    }
+
+    function setEndingsDisplay(html) {
+        document.getElementById("endings").innerHTML = html
+    }
+
+    function resetStats() {
+        stats = {
+            endings: {},
+        }
+    }
+
+    function addEnding(text) {
+        if (!stats.endings[text]) stats.endings[text] = 0
+        stats.endings[text]++
+    }
+
+    function getEndingsShortDescr() {
+        let out = ""
+        let i = -1
+        for (const key of Object.keys(stats.endings).sort()) {
+            i++
+            const amount = stats.endings[key]
+            const num = ENDING_MAX_SNIPPET_LENGTH
+            let keyShort = key
+            if (keyShort.length > num * 2 + 2) {
+                keyShort = key.substring(0, num) + "..." + key.substring(key.length - num)
+            }
+            out += `<a href="#" class="snip-link disabled-snip-link" data-index="${i}">${keyShort}: ${amount} times</a><br>`
+        }
+        return out
     }
 
     function getRndInt(min, max) {
