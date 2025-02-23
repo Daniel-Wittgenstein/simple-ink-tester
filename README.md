@@ -1,1 +1,1 @@
-[https://oxfordgirls.itch.io/simple-ink-tester](run it here!)
+[run it here](https://oxfordgirls.itch.io/simple-ink-tester)
